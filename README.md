@@ -2,6 +2,8 @@
 
 Elementra is an interactive periodic table and chemistry reference dashboard built with React, TypeScript, Tailwind CSS, and Vite.
 
+Live site: https://elementra.subirhazra.com
+
 ## Features
 
 - Search and filter all 118 elements
@@ -44,7 +46,7 @@ npm run check
 
 `npm run build` creates `dist/index.html` as a self-contained application bundle. It can be published to GitHub Pages, Netlify, Cloudflare Pages, or any static file host.
 
-For GitHub Pages, use the workflow in `.github/workflows/deploy-pages.yml` and set the Pages source to `GitHub Actions`. The Vite base path is relative, so project pages work without a repository-name-specific configuration.
+For GitHub Pages, use the workflow in `.github/workflows/deploy-pages.yml` and set the Pages source to `GitHub Actions`. The production site is published at https://elementra.subirhazra.com.
 
 ## Data and Network Use
 

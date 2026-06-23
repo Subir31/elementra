@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "An interactive, accessible periodic table and chemistry reference dashboard.",
   "license": "MIT",
-  "homepage": "https://subir31.github.io/elementra/",
+  "homepage": "https://elementra.subirhazra.com/",
   "repository": {
     "type": "git",
     "url": "https://github.com/Subir31/elementra.git"
