@@ -223,8 +223,12 @@ function Tile({ el, isSel, vis, onClick, onCtx, inCmp, delay, vm, hp, tk, dark }
         gridColumn: el.xpos, gridRow: el.ypos,
         animationDelay: `${delay}ms`,
         background: tileBg,
-        '--cat-color':  `${m.color}55`,
-        '--cat-border': `${m.color}65`,
+        '--cat-color': `${m.color}${isDataMode ? '54' : '72'}`,
+        '--cat-border': `${m.color}${isDataMode ? '70' : '8a'}`,
+        '--tile-beam': `linear-gradient(118deg, transparent 0%, transparent 24%, ${m.color}00 34%, ${m.color}${isDataMode ? '62' : '96'} 44%, rgba(255,255,255,0.98) 49.5%, ${m.color}${isDataMode ? 'd0' : 'ff'} 50%, rgba(255,255,255,0.98) 50.5%, ${m.color}${isDataMode ? '62' : '96'} 56%, ${m.color}00 66%, transparent 76%, transparent 100%)`,
+        '--tile-beam-opacity': isDataMode ? '0.34' : '0.54',
+        '--tile-hover-glow': `radial-gradient(150px circle at 50% 112%, ${m.color}${isDataMode ? '24' : '44'}, transparent 58%), radial-gradient(120px circle at 20% 18%, rgba(255,255,255,0.15), transparent 44%)`,
+        '--tile-hover-opacity': isDataMode ? '0.52' : '0.9',
       } as React.CSSProperties}
       className={cx(
         'tile-glow relative text-left rounded-xl border px-[7px] py-1.5 sm:px-[9px] sm:py-2',
@@ -240,17 +244,16 @@ function Tile({ el, isSel, vis, onClick, onCtx, inCmp, delay, vm, hp, tk, dark }
           : 'border-[var(--border)] hover:-translate-y-[3px] hover:z-10',
         !vis && '!opacity-[0.12] !animate-none grayscale saturate-0 pointer-events-none',
       )}>
-      {/* Category colour stripe at top */}
-      {!isDataMode && (
-        <div className="absolute top-0 left-[6px] right-[6px] h-[2.5px] rounded-b-none rounded-t-none rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-200"
-          style={{background: m.color}} />
-      )}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[1] overflow-hidden rounded-[inherit]">
+        <div className="tile-neon-beam absolute inset-[-58%]" />
+        <div className="tile-neon-hover absolute inset-0" />
+      </div>
       {/* Compare badge */}
       {inCmp && (
         <span className="absolute -top-1.5 -right-1.5 z-10 w-4 h-4 rounded-full bg-amber-400 text-[8px] font-black flex items-center justify-center text-zinc-900 shadow-md">✓</span>
       )}
 
-      <div className="relative mt-1">
+      <div className="relative z-10 mt-1">
         <div className="font-mono text-[8px] sm:text-[9.5px] tabular-nums font-semibold mb-0.5"
           style={{color: isDataMode ? 'rgba(255,255,255,0.85)' : 'var(--text-muted)'}}>
           {el.atomicNumber}

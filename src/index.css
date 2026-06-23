@@ -283,11 +283,73 @@ img {
 .tile-glow {
   --cat-color: transparent;
   --cat-border: transparent;
+  --tile-beam: transparent;
+  --tile-beam-opacity: 0;
+  --tile-hover-glow: transparent;
+  --tile-hover-opacity: 0;
+  isolation: isolate;
+}
+
+.tile-neon-beam {
+  background: var(--tile-beam);
+  filter: blur(10px) saturate(1.24);
+  opacity: var(--tile-beam-opacity);
+  mix-blend-mode: screen;
+  transform: translate3d(-82%, -20%, 0) rotate(18deg) scale(1.08);
+  animation: tileNeonSweep 4.8s cubic-bezier(.42, .06, .58, .94) infinite;
+  will-change: transform, opacity;
+}
+
+.tile-neon-beam::after {
+  content: "";
+  position: absolute;
+  inset: 18% 24%;
+  background: var(--tile-beam);
+  opacity: 0.92;
+  filter: blur(3px);
+}
+
+.tile-neon-hover {
+  background: var(--tile-hover-glow);
+  opacity: 0;
+  transform: scale(0.84);
+  filter: blur(10px) saturate(1.04);
+  transition: opacity 0.28s ease, transform 0.28s ease, filter 0.28s ease;
+}
+
+.tile-glow::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 34%),
+    radial-gradient(120px circle at 50% 0%, rgba(255, 255, 255, 0.05), transparent 58%);
+  opacity: 0.42;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .tile-glow:not([class*="!opacity"]):hover {
-  box-shadow: 0 8px 32px -6px var(--cat-color), 0 2px 8px -2px var(--cat-color) !important;
+  box-shadow: 0 16px 34px -18px var(--cat-color), 0 8px 18px -12px var(--cat-color) !important;
   border-color: var(--cat-border) !important;
+}
+
+.tile-glow:not([class*="!opacity"]):hover .tile-neon-beam {
+  opacity: 0.12;
+  animation-play-state: paused;
+}
+
+.tile-glow:not([class*="!opacity"]):hover .tile-neon-hover {
+  opacity: var(--tile-hover-opacity);
+  transform: scale(1);
+  filter: blur(0) saturate(1.16);
+}
+
+.tile-glow[class*="!opacity"] .tile-neon-beam,
+.tile-glow[class*="!opacity"] .tile-neon-hover {
+  animation: none !important;
+  opacity: 0 !important;
 }
 
 .glass {
@@ -439,6 +501,27 @@ img {
 @keyframes gradientShift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+
+@keyframes tileNeonSweep {
+  0% {
+    transform: translate3d(-82%, -20%, 0) rotate(18deg) scale(1.08);
+    opacity: 0;
+  }
+  18% {
+    opacity: var(--tile-beam-opacity);
+  }
+  50% {
+    transform: translate3d(0%, 0%, 0) rotate(18deg) scale(1.02);
+    opacity: calc(var(--tile-beam-opacity) + 0.12);
+  }
+  82% {
+    opacity: var(--tile-beam-opacity);
+  }
+  100% {
+    transform: translate3d(82%, 20%, 0) rotate(18deg) scale(1.08);
+    opacity: 0;
+  }
 }
 
 @keyframes pulse-glow {
