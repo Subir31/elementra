@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <title>Elementra - Interactive Periodic Table</title>
+    <meta
+      name="description"
+      content="Explore all 118 chemical elements with interactive heatmaps, phase simulation, element comparisons, quizzes, and an offline molar mass calculator."
+    />
+    <meta name="author" content="Elementra" />
+    <meta
+      name="keywords"
+      content="periodic table, chemistry, elements, interactive, heatmap, phase simulator, molar mass, quiz"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#04060f" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Elementra - Interactive Periodic Table" />
+    <meta
+      property="og:description"
+      content="Explore all 118 chemical elements with heatmaps, phase simulation, comparisons, quizzes, and molar mass calculator."
+    />
+    <meta property="og:image" content="https://elementra.vercel.app/og-image.png" />
+    <meta property="og:url" content="https://elementra.vercel.app" />
+    <meta property="og:site_name" content="Elementra" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Elementra - Interactive Periodic Table" />
+    <meta
+      name="twitter:description"
+      content="Explore all 118 elements with heatmaps, phase simulation, comparisons, and molar mass calculator."
+    />
+    <meta name="twitter:image" content="https://elementra.vercel.app/og-image.png" />
+
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; connect-src 'self' https://api.periodictableofelements.org https://en.wikipedia.org ws: wss:; font-src 'self' data: https://fonts.gstatic.com; form-action 'self'; img-src 'self' data: blob: https://upload.wikimedia.org; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
+    />
+
+    <link rel="preconnect" href="https://api.periodictableofelements.org" crossorigin />
+    <link rel="preconnect" href="https://en.wikipedia.org" crossorigin />
+    <link rel="preconnect" href="https://upload.wikimedia.org" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@500;700;800&display=swap"
+    />
+
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%235b5fcf'/%3E%3Cstop offset='50%25' stop-color='%238b5cf6'/%3E%3Cstop offset='100%25' stop-color='%230ea5e9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='system-ui,sans-serif' font-size='26' font-weight='800' fill='white' letter-spacing='-1'%3EEl%3C/text%3E%3C/svg%3E"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%235b5fcf'/%3E%3Cstop offset='100%25' stop-color='%230ea5e9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='url(%23g)'/%3E%3Ctext x='90' y='115' text-anchor='middle' font-family='system-ui,sans-serif' font-size='72' font-weight='800' fill='white'%3EEl%3C/text%3E%3C/svg%3E"
+    />
+
+    <link rel="canonical" href="https://elementra.vercel.app" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

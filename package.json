@@ -1,0 +1,48 @@
+{
+  "name": "elementra",
+  "private": true,
+  "version": "0.1.0",
+  "description": "An interactive, accessible periodic table and chemistry reference dashboard.",
+  "license": "MIT",
+  "homepage": "https://subir31.github.io/elementra/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Subir31/elementra.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Subir31/elementra/issues"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "audit": "npm audit --audit-level=high",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "dependencies": {
+    "node-periodic-table": "^0.0.6",
+    "periodic-table-data-complete": "^1.0.1",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.1",
+    "@types/node": "22.19.17",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "esbuild": "^0.28.1",
+    "tailwindcss": "4.3.1",
+    "typescript": "5.9.3",
+    "vite": "8.0.16",
+    "vite-plugin-singlefile": "2.3.3",
+    "vitest": "^4.1.8"
+  }
+}
