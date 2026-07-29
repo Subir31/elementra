@@ -30,7 +30,7 @@
     "node-periodic-table": "^0.0.6",
     "periodic-table-data-complete": "^1.0.1",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react-dom": "19.2.7"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.1",
