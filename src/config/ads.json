@@ -1,0 +1,20 @@
+{
+  "$comment": "Adsterra setup. Paste the 32-character key from each banner's code (atOptions 'key') into the matching unit, set enabled to true, and rebuild. See README › Ads.",
+  "enabled": false,
+  "strictIsolation": false,
+  "showPlaceholdersInDev": true,
+  "bannerHost": "https://www.highperformanceformat.com",
+  "units": {
+    "leaderboard": { "type": "banner", "key": "", "width": 728, "height": 90 },
+    "banner": { "type": "banner", "key": "", "width": 468, "height": 60 },
+    "mobile": { "type": "banner", "key": "", "width": 320, "height": 50 },
+    "rectangle": { "type": "banner", "key": "", "width": 300, "height": 250 },
+    "native": { "type": "native", "script": "", "containerId": "", "height": 280 }
+  },
+  "placements": {
+    "explore": ["leaderboard", "banner", "mobile"],
+    "learn": ["native", "rectangle", "mobile"],
+    "tools": ["rectangle", "mobile"],
+    "footer": ["leaderboard", "banner", "mobile"]
+  }
+}

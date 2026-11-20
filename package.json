@@ -2,7 +2,7 @@
   "name": "elementra",
   "private": true,
   "version": "0.1.0",
-  "description": "An interactive, accessible periodic table and chemistry reference dashboard.",
+  "description": "A free, interactive periodic table for students: explore all 118 elements, see trends, and learn them with mnemonics, flashcards and quizzes.",
   "license": "MIT",
   "homepage": "https://elementra.subirhazra.com/",
   "repository": {
@@ -15,6 +15,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "data": "node scripts/generate-data.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -27,8 +28,6 @@
     "node": ">=20.19.0"
   },
   "dependencies": {
-    "node-periodic-table": "^0.0.6",
-    "periodic-table-data-complete": "^1.0.1",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
@@ -39,6 +38,8 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
     "esbuild": "^0.28.1",
+    "node-periodic-table": "^0.0.6",
+    "periodic-table-data-complete": "^1.0.1",
     "tailwindcss": "4.3.1",
     "typescript": "5.9.3",
     "vite": "8.0.16",

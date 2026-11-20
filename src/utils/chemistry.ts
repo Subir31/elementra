@@ -1,10 +1,12 @@
-import { ELEMENTS } from '../data/elements'
+import { ELEMENT_BY_SYMBOL } from '../data/elements'
 
 export interface FormulaBreakdown {
   symbol: string
   count: number
   atomicMass: number
   subtotal: number
+  /** Share of the total molar mass, 0..1. */
+  fraction: number
 }
 
 export interface FormulaResult {
@@ -13,11 +15,32 @@ export interface FormulaResult {
   breakdown: FormulaBreakdown[]
 }
 
-const ELEMENT_BY_SYMBOL = new Map(ELEMENTS.map(element => [element.symbol, element]))
 const MAX_FORMULA_LENGTH = 80
 const MAX_NESTING_DEPTH = 10
 const MAX_MULTIPLIER = 10_000
 const MAX_TOTAL_ATOMS = 1_000_000
+
+const SUBSCRIPTS = '₀₁₂₃₄₅₆₇₈₉'
+const HYDRATE_DOTS = /[·•⋅∙*.]/
+
+/** Converts typed or pasted formulas (H₂O, CuSO4 • 5H2O) to the parser's ASCII form. */
+export function normalizeFormula(input: string): string {
+  return input
+    .replace(/[₀-₉]/g, ch => String(SUBSCRIPTS.indexOf(ch)))
+    .replace(/\s+/g, '')
+    .replace(/[·•⋅∙*.]/g, '·')
+}
+
+/** Renders a formula with Unicode subscripts, e.g. H2SO4 → H₂SO₄ (hydrate coefficients stay full size). */
+export function prettyFormula(formula: string): string {
+  return normalizeFormula(formula)
+    .split('·')
+    .map(part => {
+      const coeff = part.match(/^\d+/)?.[0] ?? ''
+      return coeff + part.slice(coeff.length).replace(/\d/g, d => SUBSCRIPTS[Number(d)])
+    })
+    .join('·')
+}
 
 function readMultiplier(formula: string, position: number): { value: number; position: number } {
   let end = position
@@ -74,7 +97,10 @@ function parseGroup(
       let end = position + 1
       if (end < formula.length && /[a-z]/.test(formula[end])) end += 1
       const symbol = formula.slice(position, end)
-      if (!ELEMENT_BY_SYMBOL.has(symbol)) throw new Error(`Unknown element symbol: ${symbol}.`)
+      if (!ELEMENT_BY_SYMBOL.has(symbol)) {
+        const hint = /^[a-z]/.test(formula[position + 1] ?? '') ? '' : ' Symbols start with a capital letter.'
+        throw new Error(`Unknown element symbol: ${symbol}.${hint}`)
+      }
 
       const multiplier = readMultiplier(formula, end)
       mergeCounts(counts, new Map([[symbol, 1]]), multiplier.value)
@@ -83,6 +109,9 @@ function parseGroup(
       continue
     }
 
+    if (/[a-z]/.test(token)) {
+      throw new Error(`Element symbols start with a capital letter — did you mean "${token.toUpperCase()}"?`)
+    }
     throw new Error(`Unexpected character "${token}" at position ${position + 1}.`)
   }
 
@@ -92,27 +121,32 @@ function parseGroup(
 }
 
 export function calculateMolarMass(input: string): FormulaResult {
-  const formula = input.trim().replace(/\s+/g, '')
+  const formula = normalizeFormula(input.trim())
   if (!formula) throw new Error('Enter a chemical formula.')
   if (formula.length > MAX_FORMULA_LENGTH) throw new Error(`Formula must be ${MAX_FORMULA_LENGTH} characters or fewer.`)
 
-  const parsed = parseGroup(formula, 0, null, 0)
-  if (parsed.position !== formula.length) throw new Error('Formula could not be parsed.')
+  // Hydrates and adducts: CuSO4·5H2O → CuSO4 + 5 × H2O
+  const totals = new Map<string, number>()
+  for (const part of formula.split(HYDRATE_DOTS)) {
+    if (!part) throw new Error('Formula has an empty part around “·”.')
+    const coefficient = readMultiplier(part, 0)
+    const body = part.slice(coefficient.position)
+    if (!body) throw new Error('A coefficient must be followed by a formula.')
+    const parsed = parseGroup(body, 0, null, 0)
+    if (parsed.position !== body.length) throw new Error('Formula could not be parsed.')
+    mergeCounts(totals, parsed.counts, coefficient.value)
+  }
 
-  const breakdown = Array.from(parsed.counts, ([symbol, count]) => {
+  const items = Array.from(totals, ([symbol, count]) => {
     const element = ELEMENT_BY_SYMBOL.get(symbol)
     if (!element) throw new Error(`Unknown element symbol: ${symbol}.`)
-    return {
-      symbol,
-      count,
-      atomicMass: element.atomicMass,
-      subtotal: element.atomicMass * count,
-    }
+    return { symbol, count, atomicMass: element.atomicMass, subtotal: element.atomicMass * count }
   })
+  const molarMass = items.reduce((sum, item) => sum + item.subtotal, 0)
 
   return {
     formula,
-    molarMass: breakdown.reduce((sum, item) => sum + item.subtotal, 0),
-    breakdown,
+    molarMass,
+    breakdown: items.map(item => ({ ...item, fraction: molarMass > 0 ? item.subtotal / molarMass : 0 })),
   }
 }
