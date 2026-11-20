@@ -15,18 +15,47 @@ function subscribeTheme(cb: () => void) {
   return () => window.removeEventListener(THEME_EVENT, cb)
 }
 
-export function applyTheme(theme: Theme) {
+const THEME_KEY = 'elementra-theme'
+const LIGHT_QUERY = '(prefers-color-scheme: light)'
+const systemTheme = (): Theme => (window.matchMedia(LIGHT_QUERY).matches ? 'light' : 'dark')
+
+function setRootTheme(theme: Theme) {
   const root = document.documentElement
   root.dataset.theme = theme
   root.style.colorScheme = theme
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#070a14' : '#f6f7fb')
-  try { localStorage.setItem('elementra-theme', theme) } catch { /* ignore */ }
   window.dispatchEvent(new Event(THEME_EVENT))
+}
+
+/**
+ * Applies a theme the user picked. Picking the same theme as the device
+ * clears the saved choice, so the site goes back to following the device.
+ */
+export function applyTheme(theme: Theme) {
+  setRootTheme(theme)
+  try {
+    if (theme === systemTheme()) localStorage.removeItem(THEME_KEY)
+    else localStorage.setItem(THEME_KEY, theme)
+  } catch { /* storage blocked; the choice lasts for this visit */ }
+}
+
+function hasSavedTheme(): boolean {
+  try { return localStorage.getItem(THEME_KEY) != null } catch { return false }
 }
 
 export function useTheme(): [Theme, () => void] {
   const theme = useSyncExternalStore(subscribeTheme, readTheme, () => 'dark' as Theme)
   const toggle = useCallback(() => applyTheme(readTheme() === 'dark' ? 'light' : 'dark'), [])
+
+  // Follow the device switching between light and dark (e.g. at sunset)
+  // unless the user has chosen a theme that differs from it.
+  useEffect(() => {
+    const mq = window.matchMedia(LIGHT_QUERY)
+    const onChange = () => { if (!hasSavedTheme()) setRootTheme(systemTheme()) }
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
   return [theme, toggle]
 }
 
