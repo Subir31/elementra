@@ -13,16 +13,22 @@ Live site: https://elementra.subirhazra.com
 - Element profiles with photos, memory hooks, an animated Bohr model, electron configuration, key properties and a property fingerprint; swipe or use the arrow keys to move between elements
 - Side-by-side comparison of up to three elements
 
-**Learn**
+**Practice**
 - Study sets (elements 1–20, alkali metals, halogens, noble gases, first-row transition metals, Latin symbols, all 118) with mnemonics whose letters spell each symbol
 - Flip-card sessions with swipe gestures that put unlearned cards first and repeat missed ones
 - The stories behind symbols such as Fe, Au and Pb, a periodic-trends cheat sheet and a "how to read a tile" guide
 - Progress, learned elements and a daily streak saved on the device
 
-**Quiz and tools**
+**Quizzes and tools**
 - Quizzes per study set with explained answers, look-alike distractors, streaks, personal bests and a review of every miss
 - Offline molar mass calculator (brackets, hydrates like `CuSO4·5H2O`, Unicode subscripts) with mass composition
 - Temperature converter
+
+**Search engines**
+- Every page is pre-rendered to plain HTML at build time: the home page, Practice, Tools, a 404 page and one page per element (`/element/iron`)
+- Element pages include an overview, answers to common questions (atomic mass, electron configuration, valence electrons…) and links to related elements
+- Unique titles and descriptions, canonical URLs, Open Graph and Twitter cards, and JSON-LD (breadcrumbs, FAQ, web app)
+- `sitemap.xml` and `robots.txt` are generated with the build
 
 **Experience**
 - Light and dark themes (follows the system, remembered per device)
@@ -55,7 +61,7 @@ npm run check
 | `npm run data` | Regenerate `src/data/elements.data.json` from the source datasets |
 | `npm run typecheck` | Run strict TypeScript checks |
 | `npm test` | Run the Vitest regression suite |
-| `npm run build` | Create the production build in `dist/` |
+| `npm run build` | Build the app, then pre-render every page, the sitemap and robots.txt into `dist/` |
 | `npm run preview` | Preview the production build |
 | `npm run check` | Type-check, test, and build |
 
@@ -74,7 +80,7 @@ To turn ads on:
 5. Optional: for a **Native Banner**, paste its script URL into `units.native.script` and its container id (`container-…`) into `units.native.containerId`.
 6. Rebuild and deploy.
 
-Each placement (`explore`, `learn`, `tools`, `footer`) lists units in order of preference, and the first configured one that fits the screen is shown, so phones automatically get the 320×50 banner. Units left empty are skipped, and a placement with no configured units renders nothing. During `npm run dev`, dashed placeholders show where ads will appear (set `showPlaceholdersInDev` to `false` to hide them).
+Each placement (`explore`, `element`, `practice`, `tools`, `footer`) lists units in order of preference, and the first configured one that fits the screen is shown, so phones automatically get the 320×50 banner. Units left empty are skipped, and a placement with no configured units renders nothing. During `npm run dev`, dashed placeholders show where ads will appear (set `showPlaceholdersInDev` to `false` to hide them).
 
 If a network's ads ever render blank, check the browser console first. `"strictIsolation": true` removes `allow-same-origin` from the sandbox for maximum isolation, but some ad scripts do not work without it.
 
@@ -82,9 +88,13 @@ Social bar and popunder formats are deliberately not supported, because they int
 
 ## Deployment
 
-`npm run build` creates `dist/index.html` as a self-contained application bundle, plus the icon, web manifest, service worker and (when ads are enabled) `ad-frame.html`. Publish the whole `dist/` folder to GitHub Pages, Vercel, Netlify, Cloudflare Pages or any static host.
+`npm run build` runs three steps: the client build (`dist/assets/`), a server build of `src/entry-server.tsx`, and `scripts/prerender.mjs`, which writes one HTML file per page (`index.html`, `practice.html`, `tools.html`, `element/*.html`, `404.html`) plus `sitemap.xml` and `robots.txt`. In the browser the pre-rendered HTML is hydrated, so the page is readable before JavaScript loads.
+
+The site must be served from the root of its domain, and the host must serve `/element/iron` from `element/iron.html` (GitHub Pages, Netlify and Cloudflare Pages do this; `vercel.json` turns on `cleanUrls` for Vercel). Unknown paths should get `404.html`. If the domain changes, update `SITE_URL` in [`src/config/site.ts`](src/config/site.ts).
 
 For GitHub Pages, use the workflow in `.github/workflows/deploy-pages.yml` and set the Pages source to `GitHub Actions`. `vercel.json` sets the security headers when deploying to Vercel; same-origin framing is allowed so the ad frame can load.
+
+After the first deploy, add the site to [Google Search Console](https://search.google.com/search-console) and submit `https://elementra.subirhazra.com/sitemap.xml`.
 
 ## Data and network use
 

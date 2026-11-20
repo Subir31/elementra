@@ -6,10 +6,10 @@ import {
 } from '../data/elements'
 import { memoryHooks } from '../data/learning'
 import { kelvinToCelsius, kelvinToFahrenheit } from '../utils/format'
-import type { View } from '../hooks/useUi'
 import { AdSlot } from './AdSlot'
 import { Ring, TrendLine } from './Charts'
 import { Icon } from './Icon'
+import { ElementLink, Link } from './Link'
 import { PHASE_COLORS, PeriodicTable, tileVisual, type TableView } from './PeriodicTable'
 
 export type Layout = 'table' | 'list'
@@ -51,7 +51,7 @@ const TEMP_PRESETS = [
   { label: 'Sun’s surface', short: '5,500 °C', k: 5778 },
 ]
 
-export function ExploreView({ state, searchRef, learned, compare, dayElement, learnedCount, streak, onOpen, go }: {
+export function ExploreView({ state, searchRef, learned, compare, dayElement, learnedCount, streak, onOpen, onQuickQuiz }: {
   state: ExploreState
   searchRef: RefObject<HTMLInputElement | null>
   learned: Set<number>
@@ -60,7 +60,7 @@ export function ExploreView({ state, searchRef, learned, compare, dayElement, le
   learnedCount: number
   streak: number
   onOpen: (el: Element) => void
-  go: (v: View) => void
+  onQuickQuiz: () => void
 }) {
   const { tableView, setTableView, property, setProperty, tempK, setTempK, layout, setLayout, categories, setCategories, search, setSearch } = state
   const deferredTemp = useDeferredValue(tempK)
@@ -92,7 +92,7 @@ export function ExploreView({ state, searchRef, learned, compare, dayElement, le
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      <Hero dayElement={dayElement} learnedCount={learnedCount} streak={streak} onOpen={onOpen} go={go} />
+      <Hero dayElement={dayElement} learnedCount={learnedCount} streak={streak} onQuickQuiz={onQuickQuiz} />
 
       {/* ── Controls ── */}
       <section id="explore-table" className="card scroll-mt-20 p-3 sm:p-4" aria-label="Table controls">
@@ -209,11 +209,13 @@ export function ExploreView({ state, searchRef, learned, compare, dayElement, le
             </p>
           </>
         ) : (
-          <ElementList view={tableView} property={property} tempK={deferredTemp} visible={visible} learned={learned} onOpen={onOpen} />
+          <ElementList view={tableView} property={property} tempK={deferredTemp} visible={visible} learned={learned} />
         )}
       </section>
 
       <Insights view={tableView} property={property} tempK={deferredTemp} onOpen={onOpen} />
+
+      <AboutTable />
 
       <AdSlot placement="explore" />
     </div>
@@ -221,8 +223,8 @@ export function ExploreView({ state, searchRef, learned, compare, dayElement, le
 }
 
 /* ── Hero ── */
-function Hero({ dayElement, learnedCount, streak, onOpen, go }: {
-  dayElement: Element; learnedCount: number; streak: number; onOpen: (el: Element) => void; go: (v: View) => void
+function Hero({ dayElement, learnedCount, streak, onQuickQuiz }: {
+  dayElement: Element; learnedCount: number; streak: number; onQuickQuiz: () => void
 }) {
   const m = CATEGORY_META[dayElement.categoryKey]
   const hook = memoryHooks(dayElement)[0] ?? dayElement.funFact
@@ -235,23 +237,23 @@ function Hero({ dayElement, learnedCount, streak, onOpen, go }: {
           Interactive periodic table · 118 elements
         </div>
         <h1 className="font-display text-[clamp(30px,5.4vw,60px)] font-extrabold leading-[1.04] tracking-[-0.045em]">
-          Explore every element.<br /><span className="text-gradient">Actually remember it.</span>
+          The periodic table,<br /><span className="text-gradient">made memorable.</span>
         </h1>
         <p className="mt-4 max-w-[54ch] text-[15px] leading-relaxed text-[var(--text-2)] sm:text-[16.5px]">
-          See the trends come alive, then lock them in with mnemonics, flip cards and quick quizzes — built for students, free and works offline.
+          Explore all 118 elements, watch the trends come alive, then lock them in with mnemonics, flip cards and quick quizzes. Free, built for students and works offline.
         </p>
         <div className="mt-6 flex flex-wrap gap-2.5">
-          <button type="button" className="btn btn-primary btn-lg" onClick={() => go('learn')}>
+          <Link href="/practice" className="btn btn-primary btn-lg">
             <Icon name="book" size={18} />Start learning
-          </button>
-          <button type="button" className="btn btn-lg" onClick={() => go('quiz')}>
+          </Link>
+          <button type="button" className="btn btn-lg" onClick={onQuickQuiz}>
             <Icon name="target" size={18} />Take a quiz
           </button>
         </div>
       </div>
 
       <div className="reveal grid gap-3 [animation-delay:120ms] sm:grid-cols-[1.4fr_1fr] lg:grid-cols-1">
-        <button type="button" onClick={() => onOpen(dayElement)}
+        <ElementLink el={dayElement}
           className="card group relative flex items-center gap-4 overflow-hidden p-4 text-left transition-transform duration-300 hover:-translate-y-1"
           style={{ '--c': m.color } as CSSProperties}>
           <span className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-40 blur-3xl" style={{ background: m.color }} />
@@ -262,9 +264,9 @@ function Hero({ dayElement, learnedCount, streak, onOpen, go }: {
             <span className="mt-1 line-clamp-2 block text-[13px] leading-snug text-[var(--text-3)]">{hook}</span>
           </span>
           <Icon name="arrowRight" size={18} className="ml-auto shrink-0 text-[var(--text-3)] transition-transform group-hover:translate-x-1" />
-        </button>
+        </ElementLink>
 
-        <button type="button" onClick={() => go('learn')} className="card flex items-center gap-4 p-4 text-left transition-transform duration-300 hover:-translate-y-1">
+        <Link href="/practice" className="card flex items-center gap-4 p-4 text-left transition-transform duration-300 hover:-translate-y-1">
           <Ring value={learnedCount / 118} size={62} stroke={6}>
             <span className="font-mono text-[13px] font-bold">{learnedCount}</span>
           </Ring>
@@ -276,15 +278,15 @@ function Hero({ dayElement, learnedCount, streak, onOpen, go }: {
               {streak ? `${streak}-day streak` : 'Start a streak today'}
             </span>
           </span>
-        </button>
+        </Link>
       </div>
     </section>
   )
 }
 
 /* ── List layout ── */
-function ElementList({ view, property, tempK, visible, learned, onOpen }: {
-  view: TableView; property: PropertyKey; tempK: number; visible: Set<number> | null; learned: Set<number>; onOpen: (el: Element) => void
+function ElementList({ view, property, tempK, visible, learned }: {
+  view: TableView; property: PropertyKey; tempK: number; visible: Set<number> | null; learned: Set<number>
 }) {
   const items = useMemo(() => {
     const list = ELEMENTS.filter(e => !visible || visible.has(e.atomicNumber))
@@ -300,7 +302,7 @@ function ElementList({ view, property, tempK, visible, learned, onOpen }: {
         const t = view === 'heatmap' && !v.empty ? normalizedProperty(el, property) : null
         return (
           <li key={el.atomicNumber}>
-            <button type="button" className="el-card w-full" onClick={() => onOpen(el)}
+            <ElementLink el={el} className="el-card w-full"
               style={{ '--c': color, animationDelay: `${Math.min(i, 30) * 12}ms` } as CSSProperties}>
               <span className="el-sym">{el.symbol}</span>
               <span className="min-w-0 flex-1">
@@ -314,7 +316,7 @@ function ElementList({ view, property, tempK, visible, learned, onOpen }: {
                 {t != null && <span className="meter mt-1.5 block"><span style={{ width: `${Math.max(4, t * 100)}%`, background: v.fill }} /></span>}
               </span>
               {view === 'heatmap' && <span className="font-mono text-[11px] font-semibold text-[var(--text-4)]">#{i + 1}</span>}
-            </button>
+            </ElementLink>
           </li>
         )
       })}
@@ -421,6 +423,46 @@ function PhaseInsight({ tempK }: { tempK: number }) {
             </div>
           </div>
         ))}
+      </div>
+    </section>
+  )
+}
+
+/* ── A short explainer: useful for students and for search engines ── */
+function AboutTable() {
+  return (
+    <section className="card p-5 sm:p-7" aria-labelledby="about-table">
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr] lg:gap-10">
+        <div>
+          <div className="eyebrow mb-2">The basics</div>
+          <h2 id="about-table" className="text-[22px] font-bold sm:text-[24px]">How the periodic table works</h2>
+          <div className="mt-3 space-y-3 text-[14.5px] leading-relaxed text-[var(--text-2)]">
+            <p>
+              The periodic table lists all 118 known chemical elements in order of <b className="text-[var(--text)]">atomic number</b> — the number of protons in one atom.
+            </p>
+            <p>
+              Each <b className="text-[var(--text)]">row is a period</b>: moving down a row adds an electron shell. Each <b className="text-[var(--text)]">column is a group</b>: elements in a group have the same number of outer electrons, so they react in similar ways.
+            </p>
+            <p>
+              Metals sit on the left and in the middle, nonmetals on the right, and the metalloids form a staircase between them.
+            </p>
+          </div>
+          <Link href="/practice" className="btn btn-soft mt-5"><Icon name="book" size={16} />Learn it with mnemonics</Link>
+        </div>
+        <div>
+          <h3 className="mb-3 text-[16px] font-bold">The ten element families</h3>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {CATEGORY_ORDER.map(k => (
+              <li key={k} className="panel flex gap-3 p-3">
+                <span className="mt-1 h-3 w-3 shrink-0 rounded-full" style={{ background: CATEGORY_META[k].color }} />
+                <span className="min-w-0">
+                  <span className="block text-[14px] font-semibold">{CATEGORY_META[k].label.replace(/gas$/, 'gase')}s <span className="font-mono text-[11.5px] font-medium text-[var(--text-3)]">{CATEGORY_COUNTS[k]}</span></span>
+                  <span className="mt-0.5 block text-[12.5px] leading-snug text-[var(--text-3)]">{CATEGORY_META[k].blurb}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   )

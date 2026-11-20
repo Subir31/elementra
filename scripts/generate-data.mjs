@@ -76,7 +76,6 @@ const out = base
       // not spelling variants such as Aluminium or Sulphur.
       latinName: latin && !symbolFromName(e.symbol, e.name) ? latin : null,
       oxidationStates: typeof x.oxidation_states === 'string' ? x.oxidation_states.replace(/c/g, '') : null,
-      valence: num(x.valence_electrons),
       radioactive: typeof x.half_life === 'number',
       source: e.source,
     }

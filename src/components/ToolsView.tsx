@@ -21,8 +21,11 @@ export function ToolsView({ onOpen }: { onOpen: (el: Element) => void }) {
       <div className="reveal">
         <div className="eyebrow mb-2">Tools</div>
         <h1 className="font-display text-[clamp(28px,4.4vw,44px)] font-extrabold leading-[1.08] tracking-[-0.04em]">
-          Homework helpers <span className="text-gradient">that show their working.</span>
+          Molar mass calculator <span className="text-gradient">that shows its working.</span>
         </h1>
+        <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[var(--text-2)]">
+          Type any chemical formula to get its molar mass in g/mol, with every element’s share of the total. There is a temperature converter too.
+        </p>
       </div>
       <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
         <MolarMass onOpen={onOpen} />
@@ -31,7 +34,34 @@ export function ToolsView({ onOpen }: { onOpen: (el: Element) => void }) {
           <AdSlot placement="tools" />
         </div>
       </div>
+      <HowItWorks />
     </div>
+  )
+}
+
+/** A worked example, so students can check the method as well as the answer. */
+function HowItWorks() {
+  const steps = [
+    ['Count the atoms', 'H₂O has 2 hydrogen atoms and 1 oxygen atom. Numbers after brackets multiply everything inside, so Ca(OH)₂ has 2 O and 2 H.'],
+    ['Look up each atomic mass', 'Hydrogen is 1.008 u and oxygen is 15.999 u. Open any element on the periodic table to see its mass.'],
+    ['Multiply and add', '2 × 1.008 + 1 × 15.999 = 18.015, so one mole of water has a mass of 18.015 g (18.015 g/mol).'],
+  ]
+  return (
+    <section className="card p-5 sm:p-7" aria-labelledby="how-title">
+      <h2 id="how-title" className="text-[21px] font-bold">How to calculate molar mass</h2>
+      <p className="mt-1 text-[14px] text-[var(--text-3)]">Molar mass is the mass of one mole of a substance, in grams per mole (g/mol).</p>
+      <ol className="mt-4 grid gap-3 md:grid-cols-3">
+        {steps.map(([title, text], i) => (
+          <li key={title} className="panel flex gap-3 p-4">
+            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)] font-mono text-[13px] font-bold text-[var(--accent-text)]">{i + 1}</span>
+            <span>
+              <span className="block text-[15px] font-semibold">{title}</span>
+              <span className="mt-1 block text-[13.5px] leading-relaxed text-[var(--text-2)]">{text}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+    </section>
   )
 }
 
@@ -50,7 +80,7 @@ function MolarMass({ onOpen }: { onOpen: (el: Element) => void }) {
       <div className="flex items-start gap-3">
         <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent-text)]"><Icon name="calculator" size={21} /></span>
         <div>
-          <h2 id="mm-title" className="text-[21px] font-bold">Molar mass calculator</h2>
+          <h2 id="mm-title" className="text-[21px] font-bold">Calculate molar mass</h2>
           <p className="text-[13.5px] text-[var(--text-3)]">Brackets, hydrates (·) and subscripts like H₂O all work — fully offline.</p>
         </div>
       </div>

@@ -16,7 +16,7 @@ export interface AdsConfig {
   placements: Record<string, string[]>
 }
 
-export type Placement = 'explore' | 'learn' | 'tools' | 'footer'
+export type Placement = 'explore' | 'element' | 'practice' | 'tools' | 'footer'
 
 export const ADS = config as AdsConfig
 

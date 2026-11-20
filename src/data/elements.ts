@@ -30,7 +30,6 @@ type RawElement = {
   discoveryPlace: string | null
   latinName: string | null
   oxidationStates: string | null
-  valence: number | null
   radioactive: boolean
   source: string
 }
@@ -204,6 +203,17 @@ export const CATEGORY_ORDER: CategoryKey[] = [
   'actinide',
 ]
 
+/**
+ * Outer-shell electrons for main-group elements (groups 1, 2 and 13–18).
+ * Transition and inner-transition metals have no single agreed count, so they get null.
+ */
+export function valenceElectronsOf(z: number, group: number | null): number | null {
+  if (z === 2) return 2
+  if (group === 1 || group === 2) return group
+  if (group != null && group >= 13) return group - 10
+  return null
+}
+
 export const ELEMENTS: Element[] = (raw as RawElement[]).map(e => {
   const categoryKey = categorize(e.z, e.xpos)
   const group = categoryKey === 'lanthanide' || categoryKey === 'actinide' ? null : e.xpos
@@ -232,7 +242,7 @@ export const ELEMENTS: Element[] = (raw as RawElement[]).map(e => {
     electronAffinity: e.electronAffinity,
     atomicRadius: e.radius,
     shells: e.shells,
-    valenceElectrons: e.valence,
+    valenceElectrons: valenceElectronsOf(e.z, group),
     oxidationStates: e.oxidationStates,
     radioactive: e.radioactive,
     discoveredBy: e.discoveredBy,

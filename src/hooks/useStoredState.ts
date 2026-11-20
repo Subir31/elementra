@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 
 export function readStored<T>(key: string, fallback: T, validate: (v: unknown) => v is T): T {
   try {
@@ -19,16 +19,26 @@ export function writeStored(key: string, value: unknown) {
   }
 }
 
-/** useState that persists to localStorage and fails soft when storage is unavailable. */
+/**
+ * useState that persists to localStorage and fails soft when storage is unavailable.
+ * The first render always uses the fallback, so server-rendered HTML hydrates
+ * cleanly; the saved value is read before the browser paints.
+ */
 export function useStoredState<T>(key: string, fallback: T, validate: (v: unknown) => v is T) {
-  const [value, setValue] = useState<T>(() => readStored(key, fallback, validate))
-  const first = useRef(true)
+  const [value, setValue] = useState<T>(fallback)
+  const init = useRef({ fallback, validate })
 
-  useEffect(() => {
-    if (first.current) { first.current = false; return }
-    writeStored(key, value)
-  }, [key, value])
+  useLayoutEffect(() => {
+    setValue(readStored(key, init.current.fallback, init.current.validate))
+  }, [key])
 
-  const update = useCallback((next: T | ((prev: T) => T)) => setValue(next), [])
+  const update = useCallback((next: T | ((prev: T) => T)) => {
+    setValue(prev => {
+      const v = typeof next === 'function' ? (next as (p: T) => T)(prev) : next
+      if (v !== prev) writeStored(key, v)
+      return v
+    })
+  }, [key])
+
   return [value, update] as const
 }

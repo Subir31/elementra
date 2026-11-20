@@ -13,7 +13,8 @@
   },
   "placements": {
     "explore": ["leaderboard", "banner", "mobile"],
-    "learn": ["native", "rectangle", "mobile"],
+    "element": ["leaderboard", "banner", "mobile"],
+    "practice": ["native", "rectangle", "mobile"],
     "tools": ["rectangle", "mobile"],
     "footer": ["leaderboard", "banner", "mobile"]
   }

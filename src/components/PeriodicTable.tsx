@@ -5,6 +5,8 @@ import {
 } from '../data/elements'
 import { memoryHooks } from '../data/learning'
 import { prettyConfig } from '../utils/format'
+import { elementPath } from '../config/site'
+import { isPlainClick } from '../hooks/useRouter'
 
 export type TableView = 'standard' | 'heatmap' | 'phase'
 
@@ -44,8 +46,8 @@ const Tile = memo(function Tile({ el, view, visual, dim, learned, compare }: {
   } as CSSProperties
 
   return (
-    <button
-      type="button"
+    <a
+      href={elementPath(el)}
       data-z={el.atomicNumber}
       className={`tile${dim ? ' is-dim' : ''}${compare ? ' is-compare' : ''}`}
       data-mode={view === 'standard' ? undefined : 'data'}
@@ -60,7 +62,7 @@ const Tile = memo(function Tile({ el, view, visual, dim, learned, compare }: {
       <span className="tile-name">{el.name}</span>
       <span className="tile-val">{visual.label}</span>
       {(learned || compare) && <span className={`tile-badge${compare ? ' is-compare' : ''}`} aria-hidden="true" />}
-    </button>
+    </a>
   )
 })
 
@@ -110,10 +112,12 @@ export function PeriodicTable({ view, property, tempK, visible, learned, compare
   }, [])
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return
     const z = zFromEvent(e.target)
     const el = z ? ELEMENT_BY_Z.get(z) : undefined
     if (!el) return
+    // Tiles are links; Space opens them too, like a button.
+    if (e.key === ' ') { e.preventDefault(); onOpen(el); return }
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return
     e.preventDefault()
     let next = neighbour(el, e.key)
     while (next && visible && !visible.has(next.atomicNumber)) next = neighbour(next, e.key)
@@ -132,7 +136,14 @@ export function PeriodicTable({ view, property, tempK, visible, learned, compare
         aria-label="Periodic table of the elements. Use arrow keys to move between elements."
         onPointerOver={onPointerOver}
         onFocus={e => { const z = zFromEvent(e.target); if (z) setHoverZ(z) }}
-        onClick={e => { const z = zFromEvent(e.target); const el = z ? ELEMENT_BY_Z.get(z) : undefined; if (el) onOpen(el) }}
+        onClick={e => {
+          const z = zFromEvent(e.target)
+          const el = z ? ELEMENT_BY_Z.get(z) : undefined
+          // Ctrl/⌘-click and middle-click open the element page in a new tab.
+          if (!el || !isPlainClick(e)) return
+          e.preventDefault()
+          onOpen(el)
+        }}
         onKeyDown={onKeyDown}
       >
         {/* Group numbers */}

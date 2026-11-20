@@ -1,11 +1,12 @@
 import type { CSSProperties } from 'react'
-import { CATEGORY_META, ELEMENT_BY_SYMBOL, type Element, type PropertyKey } from '../data/elements'
+import { CATEGORY_META, ELEMENT_BY_SYMBOL, type PropertyKey } from '../data/elements'
 import { STUDY_SETS, SYMBOL_STORIES, TREND_CARDS, elementsOfSet, symbolLetterIndices, type MnemonicToken, type StudySet, type TrendCard } from '../data/learning'
 import type { Progress } from '../hooks/useProgress'
 import { AdSlot } from './AdSlot'
 import { Ring } from './Charts'
-import { HighlightedName } from './ElementSheet'
+import { HighlightedName } from './ElementDetails'
 import { Icon } from './Icon'
+import { ElementLink } from './Link'
 
 export function Mnemonic({ tokens }: { tokens: MnemonicToken[] }) {
   return (
@@ -24,14 +25,13 @@ export function Mnemonic({ tokens }: { tokens: MnemonicToken[] }) {
   )
 }
 
-export function LearnView({ progress, onOpen, onStudy, onQuiz, onShowTrend }: {
+export function PracticeView({ progress, onStudy, onQuiz, onShowTrend }: {
   progress: Progress
-  onOpen: (el: Element) => void
   onStudy: (set: StudySet) => void
   onQuiz: (set: StudySet) => void
   onShowTrend: (property: PropertyKey | null) => void
 }) {
-  const { learned, streak } = progress
+  const { learned, streak, quizBest } = progress
   const sets = STUDY_SETS.filter(s => s.id !== 'all')
   const all = STUDY_SETS.find(s => s.id === 'all')
 
@@ -40,12 +40,12 @@ export function LearnView({ progress, onOpen, onStudy, onQuiz, onShowTrend }: {
       {/* Header */}
       <section className="grid gap-4 pt-2 sm:pt-4 lg:grid-cols-[1.4fr_1fr] lg:items-end">
         <div className="reveal">
-          <div className="eyebrow mb-2">Learn</div>
+          <div className="eyebrow mb-2">Practice</div>
           <h1 className="font-display text-[clamp(28px,4.4vw,46px)] font-extrabold leading-[1.08] tracking-[-0.04em]">
-            Small sets, clever tricks, <span className="text-gradient">lasting memory.</span>
+            Learn the periodic table <span className="text-gradient">with tricks that stick.</span>
           </h1>
-          <p className="mt-3 max-w-[58ch] text-[15px] leading-relaxed text-[var(--text-2)]">
-            Pick a set, read its mnemonic out loud, then flip through the cards. Anything you get right is saved on this device, so you can see your progress grow.
+          <p className="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-[var(--text-2)]">
+            Pick a small set, say its mnemonic out loud, flip through the cards, then take the quiz. Every answer is explained, and your progress is saved on this device.
           </p>
         </div>
         <div className="card reveal flex items-center gap-4 p-4 [animation-delay:100ms]">
@@ -57,20 +57,25 @@ export function LearnView({ progress, onOpen, onStudy, onQuiz, onShowTrend }: {
             <div className="mt-1 flex items-center gap-1.5 text-[13px] text-[var(--text-3)]">
               <Icon name="flame" size={14} className={streak ? 'text-orange-400' : ''} />{streak ? `${streak}-day study streak` : 'Study today to start a streak'}
             </div>
-            {all && <button type="button" className="btn btn-sm btn-soft mt-3" onClick={() => onStudy(all)}><Icon name="layers" size={14} />Study all 118</button>}
+            {all && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button type="button" className="btn btn-sm btn-soft" onClick={() => onStudy(all)}><Icon name="layers" size={14} />Study all 118</button>
+                <button type="button" className="btn btn-sm" onClick={() => onQuiz(all)}><Icon name="target" size={14} />Quiz all 118{quizBest.all != null ? ` · ★ ${quizBest.all}%` : ''}</button>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* Study sets */}
       <section aria-labelledby="sets-title">
-        <SectionTitle id="sets-title" icon="layers" title="Study sets" text="Start with the first 20 — they appear in almost every chemistry lesson." />
+        <SectionTitle id="sets-title" icon="layers" title="Study sets" text="Start with the first 20 — they appear in almost every chemistry lesson. Each set has flashcards and a quiz." />
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {sets.map((set, i) => <SetCard key={set.id} set={set} learned={learned} index={i} onStudy={onStudy} onQuiz={onQuiz} onOpen={onOpen} />)}
+          {sets.map((set, i) => <SetCard key={set.id} set={set} learned={learned} best={quizBest[set.id]} index={i} onStudy={onStudy} onQuiz={onQuiz} />)}
         </div>
       </section>
 
-      <AdSlot placement="learn" />
+      <AdSlot placement="practice" />
 
       {/* Symbol stories */}
       <section aria-labelledby="stories-title">
@@ -80,14 +85,14 @@ export function LearnView({ progress, onOpen, onStudy, onQuiz, onShowTrend }: {
             const el = ELEMENT_BY_SYMBOL.get(symbol)
             if (!el) return null
             return (
-              <button key={symbol} type="button" onClick={() => onOpen(el)}
+              <ElementLink key={symbol} el={el}
                 className="el-card !items-start !p-4" style={{ '--c': CATEGORY_META[el.categoryKey].color } as CSSProperties}>
                 <span className="el-sym">{symbol}</span>
                 <span className="min-w-0">
                   <span className="block text-[15px] font-bold">{el.name} <span className="font-normal text-[var(--text-3)]">←</span> <HighlightedName symbol={symbol} word={s.origin} /></span>
                   <span className="mt-1 block text-[13px] leading-snug text-[var(--text-3)]">{s.story}</span>
                 </span>
-              </button>
+              </ElementLink>
             )
           })}
         </div>
@@ -137,9 +142,9 @@ function SectionTitle({ id, icon, title, text }: { id: string; icon: 'layers' | 
   )
 }
 
-function SetCard({ set, learned, index, onStudy, onQuiz, onOpen }: {
-  set: StudySet; learned: Set<number>; index: number
-  onStudy: (s: StudySet) => void; onQuiz: (s: StudySet) => void; onOpen: (el: Element) => void
+function SetCard({ set, learned, best, index, onStudy, onQuiz }: {
+  set: StudySet; learned: Set<number>; best?: number; index: number
+  onStudy: (s: StudySet) => void; onQuiz: (s: StudySet) => void
 }) {
   const els = elementsOfSet(set)
   const done = els.filter(e => learned.has(e.atomicNumber)).length
@@ -157,12 +162,12 @@ function SetCard({ set, learned, index, onStudy, onQuiz, onOpen }: {
 
       <div className="mt-3 flex flex-wrap gap-1.5">
         {els.map(e => (
-          <button key={e.atomicNumber} type="button" onClick={() => onOpen(e)} title={e.name}
+          <ElementLink key={e.atomicNumber} el={e} title={e.name} aria-label={e.name}
             className="el-sym relative !h-9 !w-9 !rounded-[10px] !text-[13.5px] transition-transform hover:-translate-y-0.5"
             style={{ '--c': CATEGORY_META[e.categoryKey].color, animation: 'none' } as CSSProperties}>
             {e.symbol}
             {learned.has(e.atomicNumber) && <span className="tile-badge !right-[-3px] !top-[-3px] !h-2.5 !w-2.5" />}
-          </button>
+          </ElementLink>
         ))}
       </div>
 
@@ -176,7 +181,7 @@ function SetCard({ set, learned, index, onStudy, onQuiz, onOpen }: {
         </div>
         <div className="grid grid-cols-2 gap-2">
           <button type="button" className="btn btn-primary btn-sm" onClick={() => onStudy(set)}><Icon name="layers" size={14} />Flashcards</button>
-          <button type="button" className="btn btn-sm" onClick={() => onQuiz(set)}><Icon name="target" size={14} />Quiz</button>
+          <button type="button" className="btn btn-sm" onClick={() => onQuiz(set)}><Icon name="target" size={14} />Quiz{best != null ? <span className="font-mono text-[11px] text-[var(--text-3)]">★ {best}%</span> : null}</button>
         </div>
       </div>
     </article>

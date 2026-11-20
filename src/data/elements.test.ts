@@ -23,6 +23,14 @@ describe('element data normalization', () => {
     expect(silicon?.metalType).toBe('Metalloid')
   })
 
+  it('counts valence electrons from the group for main-group elements only', () => {
+    const count = (symbol: string) => ELEMENTS.find(e => e.symbol === symbol)?.valenceElectrons
+    expect([count('H'), count('He'), count('Na'), count('Mg'), count('C'), count('O'), count('Cl'), count('Ne'), count('Xe')])
+      .toEqual([1, 2, 1, 2, 4, 6, 7, 8, 8])
+    expect(count('Fe')).toBeNull()
+    expect(count('U')).toBeNull()
+  })
+
   it('converts gas density from g/L to g/cm3', () => {
     const hydrogen = ELEMENTS.find(element => element.atomicNumber === 1)
 

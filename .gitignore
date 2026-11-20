@@ -10,3 +10,4 @@ Thumbs.db
 !.env.example
 .idea/
 .vscode/
+.ssr/

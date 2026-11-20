@@ -20,7 +20,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "audit": "npm audit --audit-level=high",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.tsx --outDir .ssr && node scripts/prerender.mjs",
     "preview": "vite preview",
     "check": "npm run typecheck && npm test && npm run build"
   },
@@ -43,7 +43,6 @@
     "tailwindcss": "4.3.1",
     "typescript": "5.9.3",
     "vite": "8.0.16",
-    "vite-plugin-singlefile": "2.3.3",
     "vitest": "^4.1.8"
   }
 }

@@ -73,7 +73,7 @@ function AdFrame({ name, unit, load, placeholder }: { name: string; unit: AdUnit
       {load && (
         <iframe
           className="ad-frame"
-          src={`./ad-frame.html?u=${encodeURIComponent(name)}`}
+          src={`/ad-frame.html?u=${encodeURIComponent(name)}`}
           title="Advertisement"
           width={unit.type === 'banner' ? unit.width : undefined}
           height={unit.height}

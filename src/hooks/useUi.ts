@@ -1,53 +1,32 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
-/* ── Hash routing ── */
-export type View = 'explore' | 'learn' | 'quiz' | 'tools'
-const VIEWS: View[] = ['explore', 'learn', 'quiz', 'tools']
-
-function readView(): View {
-  const v = window.location.hash.replace(/^#\/?/, '').split(/[/?]/)[0]
-  return (VIEWS as string[]).includes(v) ? (v as View) : 'explore'
-}
-
-function subscribeHash(cb: () => void) {
-  window.addEventListener('hashchange', cb)
-  return () => window.removeEventListener('hashchange', cb)
-}
-
-export function useView(): [View, (v: View) => void] {
-  const view = useSyncExternalStore(subscribeHash, readView, () => 'explore' as View)
-  const go = useCallback((v: View) => {
-    const hash = v === 'explore' ? '#/' : `#/${v}`
-    if (window.location.hash !== hash) window.location.hash = hash
-    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
-  }, [])
-  return [view, go]
-}
-
 /* ── Theme ── */
 export type Theme = 'light' | 'dark'
+const THEME_EVENT = 'elementra:theme'
 
-function initialTheme(): Theme {
-  const attr = document.documentElement.dataset.theme
-  if (attr === 'light' || attr === 'dark') return attr
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+// The theme is applied to <html> by an inline script before first paint, so
+// the DOM attribute is the source of truth and React only mirrors it.
+function readTheme(): Theme {
+  return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'
+}
+
+function subscribeTheme(cb: () => void) {
+  window.addEventListener(THEME_EVENT, cb)
+  return () => window.removeEventListener(THEME_EVENT, cb)
+}
+
+export function applyTheme(theme: Theme) {
+  const root = document.documentElement
+  root.dataset.theme = theme
+  root.style.colorScheme = theme
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#070a14' : '#f6f7fb')
+  try { localStorage.setItem('elementra-theme', theme) } catch { /* ignore */ }
+  window.dispatchEvent(new Event(THEME_EVENT))
 }
 
 export function useTheme(): [Theme, () => void] {
-  const [theme, setTheme] = useState<Theme>(initialTheme)
-  useEffect(() => {
-    const root = document.documentElement
-    root.dataset.theme = theme
-    root.style.colorScheme = theme
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#070a14' : '#f6f7fb')
-  }, [theme])
-  const toggle = useCallback(() => {
-    setTheme(t => {
-      const next = t === 'dark' ? 'light' : 'dark'
-      try { localStorage.setItem('elementra-theme', next) } catch { /* ignore */ }
-      return next
-    })
-  }, [])
+  const theme = useSyncExternalStore(subscribeTheme, readTheme, () => 'dark' as Theme)
+  const toggle = useCallback(() => applyTheme(readTheme() === 'dark' ? 'light' : 'dark'), [])
   return [theme, toggle]
 }
 

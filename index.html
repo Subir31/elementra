@@ -4,35 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <title>Elementra · Interactive Periodic Table</title>
-    <meta
-      name="description"
-      content="A free interactive periodic table for students. Explore all 118 elements, see periodic trends, learn with mnemonics and flashcards, take quizzes, and calculate molar mass — even offline."
-    />
+    <!--seo-->
+    <title>Interactive Periodic Table for Students | Elementra</title>
+    <meta name="description" content="Free interactive periodic table of all 118 elements with trends, electron configurations, mnemonics, flashcards and quizzes. Built for students." />
+    <link rel="canonical" href="https://elementra.subirhazra.com/" />
+    <!--/seo-->
+
     <meta name="author" content="Elementra" />
-    <meta
-      name="keywords"
-      content="periodic table, interactive periodic table, chemistry, elements, periodic trends, mnemonics, flashcards, chemistry quiz, molar mass calculator, students"
-    />
     <meta name="referrer" content="no-referrer" />
     <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#070a14" />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Elementra · Interactive Periodic Table" />
-    <meta
-      property="og:description"
-      content="Explore all 118 elements, see the trends, and actually remember them with mnemonics, flashcards and quizzes."
-    />
-    <meta property="og:url" content="https://elementra.subirhazra.com/" />
-    <meta property="og:site_name" content="Elementra" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Elementra · Interactive Periodic Table" />
-    <meta
-      name="twitter:description"
-      content="Explore all 118 elements, see the trends, and remember them with mnemonics, flashcards and quizzes."
-    />
-    <link rel="canonical" href="https://elementra.subirhazra.com/" />
 
     <meta
       http-equiv="Content-Security-Policy"
@@ -52,38 +33,36 @@
       })();
     </script>
 
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Elementra",
-        "url": "https://elementra.subirhazra.com/",
-        "description": "A free interactive periodic table with periodic trends, mnemonics, flashcards, quizzes and a molar mass calculator.",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "Any",
-        "isAccessibleForFree": true,
-        "educationalLevel": "Secondary school",
-        "about": { "@type": "Thing", "name": "Periodic table of the chemical elements" },
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
-      }
-    </script>
-
+    <!-- Fonts load without blocking the first paint; text shows in a fallback font until they arrive. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="stylesheet"
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap"
     />
+    <link
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap"
+      />
+    </noscript>
     <link rel="preconnect" href="https://thumb.wikimedia.org" />
 
-    <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="./icon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <div id="root"></div>
     <noscript>
-      <p style="font-family: system-ui, sans-serif; padding: 24px">Elementra needs JavaScript to show the interactive periodic table.</p>
+      <p style="font-family: system-ui, sans-serif; padding: 12px 24px; text-align: center">Turn on JavaScript to use the interactive table, flashcards and quizzes.</p>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
