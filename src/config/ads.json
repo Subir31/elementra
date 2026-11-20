@@ -1,21 +1,21 @@
 {
-  "$comment": "Adsterra setup. Paste the 32-character key from each banner's code (atOptions 'key') into the matching unit, set enabled to true, and rebuild. See README › Ads.",
-  "enabled": false,
+  "$comment": "Adsterra setup. Each unit needs its 32-character key and, when Adsterra's code uses a different script address than bannerHost/<key>/invoke.js, the full script address as src. See README › Ads.",
+  "enabled": true,
   "strictIsolation": false,
   "showPlaceholdersInDev": true,
-  "bannerHost": "https://www.highperformanceformat.com",
+  "bannerHost": "https://bauval.org",
   "units": {
-    "leaderboard": { "type": "banner", "key": "", "width": 728, "height": 90 },
-    "banner": { "type": "banner", "key": "", "width": 468, "height": 60 },
-    "mobile": { "type": "banner", "key": "", "width": 320, "height": 50 },
+    "leaderboard": { "type": "banner", "key": "29a99da7b0a21688827a62e9cd1c8f2d", "src": "https://bauval.org/22/29a99da7b0a21688827a62e9cd1c8f2d", "width": 728, "height": 90 },
+    "banner": { "type": "banner", "key": "791356d55e707ac64257172abce6b362", "src": "https://bauval.org/22/791356d55e707ac64257172abce6b362", "width": 468, "height": 60 },
+    "mobile": { "type": "banner", "key": "88b6d032c9e1d5ab266be349fe5b9301", "src": "https://bauval.org/22/88b6d032c9e1d5ab266be349fe5b9301", "width": 320, "height": 50 },
     "rectangle": { "type": "banner", "key": "", "width": 300, "height": 250 },
-    "native": { "type": "native", "script": "", "containerId": "", "height": 280 }
+    "native": { "type": "native", "script": "https://bauval.org/21/4faba453b27c22a02c08bd721277f8b4", "containerId": "container-4faba453b27c22a02c08bd721277f8b4", "height": 280 }
   },
   "placements": {
     "explore": ["leaderboard", "banner", "mobile"],
     "element": ["leaderboard", "banner", "mobile"],
     "practice": ["native", "rectangle", "mobile"],
-    "tools": ["rectangle", "mobile"],
+    "tools": ["rectangle", "banner", "mobile"],
     "footer": ["leaderboard", "banner", "mobile"]
   }
 }

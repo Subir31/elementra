@@ -249,9 +249,12 @@ export default function App() {
           {route.view === 'notfound' && <NotFound path={route.path} />}
         </main>
 
-        <div className="shell relative">
-          <AdSlot placement="footer" className="pb-6" />
-        </div>
+        {/* The home page already ends with its own ad, and the 404 page shows none. */}
+        {(route.view === 'practice' || route.view === 'tools' || route.view === 'element') && (
+          <div className="shell relative">
+            <AdSlot placement="footer" className="pb-6" />
+          </div>
+        )}
         <Footer />
 
         {/* ── Mobile bottom navigation ── */}

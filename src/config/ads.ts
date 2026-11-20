@@ -66,6 +66,7 @@ export function buildAdFrame(cfg: AdsConfig = ADS): string {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Advertisement</title>
 <style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}body{display:flex;align-items:center;justify-content:center;min-height:100vh}</style>
@@ -81,6 +82,8 @@ export function buildAdFrame(cfg: AdsConfig = ADS): string {
     window.atOptions = { key: u.key, format: 'iframe', height: u.height, width: u.width, params: {} };
     document.write('<script src="' + u.src + '"><\\/script>');
   } else {
+    // Native widgets size themselves; the parent page resizes the frame to fit.
+    document.body.style.cssText = 'display:block;min-height:0';
     document.write('<script async data-cfasync="false" src="' + u.src + '"><\\/script><div id="' + u.containerId + '"></div>');
   }
 })();
